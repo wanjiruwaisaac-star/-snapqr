@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SnapQR — Snap it. Share it. Done!</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --purple: #6C47FF;
+  --coral: #FF6B6B;
+  --mint: #1DE9B6;
+  --dark: #0D0D0D;
+  --gray: #F4F4F6;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --white: #ffffff;
+  --radius: 16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(13,13,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);}
+.nav-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);}
+.nav-logo span{color:var(--purple);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.9rem;transition:color 0.2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-cta{background:var(--purple);color:var(--white);border:none;padding:0.6rem 1.4rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,71,255,0.4);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%, rgba(108,71,255,0.25) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(29,233,182,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(255,107,107,0.15) 0%, transparent 50%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,71,255,0.15);border:1px solid rgba(108,71,255,0.4);border-radius:50px;padding:0.4rem 1rem;font-size:0.8rem;color:var(--mint);margin-bottom:1.5rem;animation:fadeUp 0.6s ease both;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(3rem,8vw,6rem);font-weight:800;line-height:1.05;margin-bottom:1.5rem;animation:fadeUp 0.6s 0.1s ease both;}
+.hero h1 .accent{color:var(--purple);}
+.hero h1 .accent2{color:var(--mint);}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:rgba(255,255,255,0.65);max-width:520px;line-height:1.7;margin-bottom:2.5rem;animation:fadeUp 0.6s 0.2s ease both;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.6s 0.3s ease both;}
+.btn-primary{background:var(--purple);color:var(--white);border:none;padding:0.9rem 2rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;display:inline-block;}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(108,71,255,0.5);}
+.btn-outline{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.3);padding:0.9rem 2rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-outline:hover{border-color:var(--white);background:rgba(255,255,255,0.05);}
+.hero-stats{display:flex;gap:3rem;margin-top:4rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.6s 0.4s ease both;}
+.stat{text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--white);}
+.stat-label{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+/* GENERATOR */
+.generator{padding:6rem 2rem;background:var(--white);color:var(--text);}
+.section-header{text-align:center;margin-bottom:3rem;}
+.section-tag{font-size:0.8rem;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem;display:block;}
+.section-header h2{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;color:var(--text);}
+.section-header p{color:var(--muted);margin-top:0.75rem;font-size:1rem;}
+.gen-container{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.gen-form{background:var(--gray);border-radius:24px;padding:2rem;}
+.gen-form h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:var(--text);}
+.qr-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.5rem;}
+.qr-type{background:var(--white);border:2px solid transparent;border-radius:12px;padding:0.6rem;text-align:center;cursor:pointer;transition:all 0.2s;font-size:0.75rem;color:var(--muted);}
+.qr-type.active{border-color:var(--purple);background:#f0ebff;color:var(--purple);font-weight:600;}
+.qr-type-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
+.form-group{margin-bottom:1rem;}
+.form-group label{font-size:0.85rem;font-weight:500;color:var(--text);display:block;margin-bottom:6px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:0.75rem 1rem;border:1.5px solid #e5e7eb;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--text);background:var(--white);transition:border 0.2s;outline:none;}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--purple);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.color-row-gen{display:flex;gap:8px;margin-bottom:1.5rem;}
+.color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform 0.2s;}
+.color-opt.selected{border-color:var(--dark);transform:scale(1.15);}
+.generate-btn{width:100%;background:var(--purple);color:var(--white);border:none;padding:1rem;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.generate-btn:hover{background:#5535e0;transform:translateY(-2px);}
+.gen-preview{background:var(--gray);border-radius:24px;padding:2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.qr-display{background:var(--white);border-radius:20px;padding:1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.08);margin-bottom:1.5rem;min-width:200px;min-height:200px;display:flex;align-items:center;justify-content:center;}
+.qr-placeholder{color:var(--muted);font-size:0.9rem;}
+.preview-label{font-size:0.85rem;color:var(--muted);margin-bottom:1rem;}
+.download-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.dl-btn{background:var(--purple);color:var(--white);border:none;padding:0.6rem 1.2rem;border-radius:50px;font-size:0.8rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.dl-btn:hover{background:#5535e0;}
+.dl-btn.secondary{background:var(--dark);color:var(--white);}
+
+/* PRICING */
+.pricing{padding:6rem 2rem;background:var(--dark);}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;max-width:900px;margin:0 auto;}
+.price-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:2rem;transition:transform 0.2s;}
+.price-card:hover{transform:translateY(-4px);}
+.price-card.featured{background:var(--purple);border-color:var(--purple);}
+.price-tag{display:inline-block;font-size:0.75rem;background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:50px;margin-bottom:1rem;color:var(--mint);}
+.price-card.featured .price-tag{background:rgba(255,255,255,0.2);color:var(--white);}
+.price-name{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;}
+.price-amount{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:0.25rem;}
+.price-amount span{font-size:1rem;font-weight:400;opacity:0.7;}
+.price-desc{font-size:0.85rem;opacity:0.65;margin-bottom:1.5rem;}
+.price-features{list-style:none;margin-bottom:1.5rem;}
+.price-features li{font-size:0.875rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;opacity:0.85;}
+.price-features li:before{content:"✓";color:var(--mint);font-weight:700;}
+.price-btn{width:100%;padding:0.85rem;border-radius:50px;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;}
+.price-card:not(.featured) .price-btn{background:rgba(255,255,255,0.1);color:var(--white);}
+.price-card:not(.featured) .price-btn:hover{background:var(--purple);}
+.price-card.featured .price-btn{background:var(--white);color:var(--purple);}
+
+/* HOW IT WORKS */
+.how{padding:6rem 2rem;background:#0a0a14;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;max-width:900px;margin:0 auto;}
+.step{text-align:center;padding:2rem 1rem;}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin:0 auto 1rem;}
+.step h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+.step p{font-size:0.875rem;color:rgba(255,255,255,0.55);line-height:1.6;}
+
+/* USE CASES */
+.usecases{padding:6rem 2rem;background:var(--white);color:var(--text);}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;max-width:900px;margin:0 auto;}
+.case-card{background:var(--gray);border-radius:20px;padding:1.5rem;text-align:center;transition:transform 0.2s,box-shadow 0.2s;}
+.case-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(108,71,255,0.12);}
+.case-icon{font-size:2.2rem;margin-bottom:0.75rem;}
+.case-card h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;}
+.case-card p{font-size:0.8rem;color:var(--muted);}
+
+/* LANGUAGES */
+.lang-toggle{display:flex;gap:8px;justify-content:center;margin-top:1rem;}
+.lang-btn{background:rgba(255,255,255,0.1);color:var(--white);border:1px solid rgba(255,255,255,0.2);padding:6px 16px;border-radius:50px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.lang-btn.active{background:var(--mint);color:var(--dark);border-color:var(--mint);}
+
+/* FOOTER */
+footer{background:#070710;padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.06);}
+.footer-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;}
+.footer-logo span{color:var(--purple);}
+footer p{font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:0.5rem;}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;margin:1.5rem 0;flex-wrap:wrap;}
+.footer-links a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.85rem;transition:color 0.2s;}
+.footer-links a:hover{color:var(--white);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* PAYMENT BANNER */
+.payment-banner{background:rgba(108,71,255,0.1);border:1px solid rgba(108,71,255,0.3);border-radius:16px;padding:1.5rem;text-align:center;max-width:900px;margin:3rem auto 0;}
+.payment-banner h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+.payment-banner p{font-size:0.875rem;color:rgba(255,255,255,0.65);}
+.payment-icons{display:flex;gap:1rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;}
+.pay-icon{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 16px;font-size:0.85rem;font-weight:500;}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .gen-container{grid-template-columns:1fr;}
+  .nav-links{display:none;}
+  .hero-stats{gap:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Snap<span>QR</span></div>
+  <ul class="nav-links">
+    <li><a href="#generator">Generate</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#usecases">Use cases</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">Create QR Free</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">🚀 The fastest QR code generator on the planet</div>
+  <h1>
+    <span class="accent">Snap</span> your QR.<br/>
+    <span class="accent2">Share</span> it anywhere.
+  </h1>
+  <p class="hero-sub">Create stunning, scannable QR codes for your business, events, contacts & more — in seconds. No monthly fees. Pay once, own it forever.</p>
+  <div class="hero-btns">
+    <a href="#generator" class="btn-primary">⚡ Create My QR Code</a>
+    <a href="#pricing" class="btn-outline">View Pricing →</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">10K+</div><div class="stat-label">QR Codes Created</div></div>
+    <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Countries Reached</div></div>
+    <div class="stat"><div class="stat-num">$1</div><div class="stat-label">Starting Price</div></div>
+    <div class="stat"><div class="stat-num">99.9%</div><div class="stat-label">Scan Success Rate</div></div>
+  </div>
+</section>
+
+<!-- GENERATOR -->
+<section class="generator" id="generator">
+  <div class="section-header">
+    <span class="section-tag">✦ Free QR Generator</span>
+    <h2>Create Your QR Code</h2>
+    <p>Choose a type, enter your details and download instantly</p>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setLang('sw')">🇰🇪 Kiswahili</button>
+    </div>
+  </div>
+  <div class="gen-container">
+    <div class="gen-form">
+      <h3 id="form-title">What are you creating?</h3>
+      <div class="qr-types">
+        <div class="qr-type active" onclick="selectType('url',this)"><span class="qr-type-icon">🔗</span>Website</div>
+        <div class="qr-type" onclick="selectType('vcard',this)"><span class="qr-type-icon">👤</span>Contact</div>
+        <div class="qr-type" onclick="selectType('text',this)"><span class="qr-type-icon">💬</span>Text</div>
+        <div class="qr-type" onclick="selectType('email',this)"><span class="qr-type-icon">✉️</span>Email</div>
+        <div class="qr-type" onclick="selectType('whatsapp',this)"><span class="qr-type-icon">📱</span>WhatsApp</div>
+        <div class="qr-type" onclick="selectType('feedback',this)"><span class="qr-type-icon">⭐</span>Feedback</div>
+      </div>
+
+      <div id="fields-url">
+        <div class="form-group"><label id="lbl-url">Website URL</label><input type="url" id="input-url" placeholder="https://yourwebsite.com"/></div>
+      </div>
+      <div id="fields-vcard" style="display:none">
+        <div class="form-group"><label>Full Name</label><input type="text" id="vc-name" placeholder="John Doe"/></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="vc-phone" placeholder="+254700000000"/></div>
+        <div class="form-group"><label>Email</label><input type="email" id="vc-email" placeholder="john@email.com"/></div>
+        <div class="form-group"><label>Title</label><input type="text" id="vc-title" placeholder="Your profession"/></div>
+      </div>
+      <div id="fields-text" style="display:none">
+        <div class="form-group"><label>Your Message</label><textarea id="input-text" placeholder="Enter any text or message..."></textarea></div>
+      </div>
+      <div id="fields-email" style="display:none">
+        <div class="form-group"><label>Email Address</label><input type="email" id="input-email" placeholder="contact@email.com"/></div>
+        <div class="form-group"><label>Subject</label><input type="text" id="input-subject" placeholder="Email subject"/></div>
+      </div>
+      <div id="fields-whatsapp" style="display:none">
+        <div class="form-group"><label>WhatsApp Number</label><input type="text" id="input-wa" placeholder="+254700000000"/></div>
+        <div class="form-group"><label>Pre-filled Message</label><textarea id="input-wa-msg" placeholder="Hello! I'd like to..."></textarea></div>
+      </div>
+      <div id="fields-feedback" style="display:none">
+        <div class="form-group"><label>Feedback Form URL</label><input type="url" id="input-feedback" placeholder="https://forms.gle/..."/></div>
+      </div>
+
+      <div class="form-group">
+        <label>QR Color</label>
+        <div class="color-row-gen">
+          <div class="color-opt selected" style="background:#000000;" data-color="#000000" onclick="selectColor(this)"></div>
+          <div class="color-opt" style="background:#6C47FF;" data-color="#6C47FF" onclick="selectColor(this)"></div>
+          <div class="color-opt" style="background:#0a3d62;" data-color="#0a3d62" onclick="selectColor(this)"></div>
+          <div class="color-opt" style="background:#FF6B6B;" data-color="#FF6B6B" onclick="selectColor(this)"></div>
+          <div class="color-opt" style="background:#1a7a4a;" data-color="#1a7a4a" onclick="selectColor(this)"></div>
+        </div>
+      </div>
+      <button class="generate-btn" onclick="generateQR()">⚡ Generate QR Code</button>
+    </div>
+
+    <div class="gen-preview">
+      <div class="qr-display" id="qr-output">
+        <div class="qr-placeholder" id="qr-placeholder">
+          <div style="font-size:3rem;">📱</div>
+          <p style="margin-top:8px;font-size:0.85rem;">Your QR code<br/>will appear here</p>
+        </div>
+        <div id="qrcode" style="display:none;"></div>
+      </div>
+      <p class="preview-label" id="preview-label">Fill the form and click Generate</p>
+      <div class="download-btns">
+        <button class="dl-btn" onclick="downloadQR('png')">⬇ Download PNG</button>
+        <button class="dl-btn secondary" onclick="downloadQR('svg')">⬇ Download SVG</button>
+      </div>
+      <div style="margin-top:1rem;padding:1rem;background:#f0ebff;border-radius:12px;font-size:0.8rem;color:#6C47FF;text-align:left;">
+        <strong>⚡ Pro tip:</strong> Upgrade to Pro ($3) to add your logo to the center of the QR code and get a branded poster!
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-header">
+    <span class="section-tag" style="color:var(--mint);">✦ Simple Process</span>
+    <h2 style="color:var(--white);" id="how-title">How It Works</h2>
+    <p style="color:rgba(255,255,255,0.55);" id="how-sub">Three steps to your perfect QR code</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3 id="s1-title">Choose Your Type</h3>
+      <p id="s1-desc">Select from URL, contact card, WhatsApp, feedback form and more</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3 id="s2-title">Customize It</h3>
+      <p id="s2-desc">Pick your color, add your logo (Pro), and make it truly yours</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3 id="s3-title">Download & Share</h3>
+      <p id="s3-desc">Download your QR code and share it anywhere — print, digital, everywhere</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3 id="s4-title">Get Scanned!</h3>
+      <p id="s4-desc">Watch your customers, members and followers connect with you instantly</p>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="usecases" id="usecases">
+  <div class="section-header">
+    <span class="section-tag">✦ Use Cases</span>
+    <h2>Perfect For Everyone</h2>
+    <p>From Saccos to startups — SnapQR works for all</p>
+  </div>
+  <div class="cases-grid">
+    <div class="case-card"><div class="case-icon">🏦</div><h3>Saccos & Banks</h3><p>Feedback, membership & payments</p></div>
+    <div class="case-card"><div class="case-icon">🍽️</div><h3>Restaurants</h3><p>Digital menus & reviews</p></div>
+    <div class="case-card"><div class="case-icon">🎪</div><h3>Events</h3><p>Tickets & check-ins</p></div>
+    <div class="case-card"><div class="case-icon">🚗</div><h3>Drivers</h3><p>Contact cards & bookings</p></div>
+    <div class="case-card"><div class="case-icon">🛍️</div><h3>Shops</h3><p>Products & promotions</p></div>
+    <div class="case-card"><div class="case-icon">🏥</div><h3>Clinics</h3><p>Appointments & info</p></div>
+    <div class="case-card"><div class="case-icon">🎓</div><h3>Schools</h3><p>Resources & portals</p></div>
+    <div class="case-card"><div class="case-icon">📸</div><h3>Creatives</h3><p>Portfolios & social links</p></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-header">
+    <span class="section-tag" style="color:var(--mint);">✦ Simple Pricing</span>
+    <h2 style="color:var(--white);">Pay Once. Own It Forever.</h2>
+    <p style="color:rgba(255,255,255,0.55);">No subscriptions. No hidden fees. No surprises.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tag">Basic</div>
+      <div class="price-name">Starter</div>
+      <div class="price-amount">$1<span>/QR</span></div>
+      <div class="price-desc">Perfect for individuals</div>
+      <ul class="price-features">
+        <li>1 QR Code</li>
+        <li>PNG Download</li>
+        <li>URL, Text, Email</li>
+        <li>Black & White</li>
+        <li>Instant delivery</li>
+      </ul>
+      <button class="price-btn" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-tag">⭐ Most Popular</div>
+      <div class="price-name">Pro</div>
+      <div class="price-amount">$3<span>/QR</span></div>
+      <div class="price-desc">For brands & businesses</div>
+      <ul class="price-features">
+        <li>1 QR Code</li>
+        <li>Custom logo center</li>
+        <li>Custom colors</li>
+        <li>PNG + PDF + SVG</li>
+        <li>Branded poster</li>
+        <li>All QR types</li>
+      </ul>
+      <button class="price-btn">Get Pro</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tag">Business</div>
+      <div class="price-name">Bundle</div>
+      <div class="price-amount">$8<span>/5 QRs</span></div>
+      <div class="price-desc">For teams & agencies</div>
+      <ul class="price-features">
+        <li>5 QR Codes</li>
+        <li>All Pro features</li>
+        <li>Priority support</li>
+        <li>Bulk download</li>
+        <li>Custom branding</li>
+      </ul>
+      <button class="price-btn">Get Bundle</button>
+    </div>
+  </div>
+
+  <div class="payment-banner">
+    <h3>💳 We accept payments worldwide</h3>
+    <p>Pay securely via M-Pesa, Visa, Mastercard or any major card. Fast, safe & encrypted.</p>
+    <div class="payment-icons">
+      <div class="pay-icon">📱 M-Pesa</div>
+      <div class="pay-icon">💳 Visa</div>
+      <div class="pay-icon">💳 Mastercard</div>
+      <div class="pay-icon">🔒 SSL Secured</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Snap<span>QR</span></div>
+  <p>Snap it. Share it. Done!</p>
+  <div class="footer-links">
+    <a href="#generator">Generate</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#how">How it works</a>
+    <a href="mailto:hello@snapqr.com">Contact Us</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+  </div>
+  <p>© 2026 SnapQR. Built with ❤️ for the world. | English & Kiswahili</p>
+</footer>
+
+<script>
+let currentType = 'url';
+let currentColor = '#000000';
+let qrGenerated = false;
+
+const translations = {
+  en: {
+    formTitle: 'What are you creating?',
+    howTitle: 'How It Works',
+    howSub: 'Three steps to your perfect QR code',
+    s1: ['Choose Your Type','Select from URL, contact card, WhatsApp, feedback form and more'],
+    s2: ['Customize It','Pick your color, add your logo (Pro), and make it truly yours'],
+    s3: ['Download & Share','Download your QR code and share it anywhere — print, digital, everywhere'],
+    s4: ['Get Scanned!','Watch your customers, members and followers connect with you instantly'],
+    urlLabel: 'Website URL',
+  },
+  sw: {
+    formTitle: 'Unatengeneza nini?',
+    howTitle: 'Jinsi Inavyofanya Kazi',
+    howSub: 'Hatua tatu kwa QR code yako kamili',
+    s1: ['Chagua Aina','Chagua URL, kadi ya mawasiliano, WhatsApp, fomu ya maoni na zaidi'],
+    s2: ['Ibadilishe','Chagua rangi, ongeza nembo yako (Pro), na uifanye iwe yako'],
+    s3: ['Pakua & Shiriki','Pakua QR code yako na uishiriki popote — chapisha, kidijitali, kila mahali'],
+    s4: ['Skanishwa!','Angalia wateja, wanachama na wafuasi wako wakijiunganisha nawe mara moja'],
+    urlLabel: 'Anwani ya Tovuti',
+  }
+};
+
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const t = translations[lang];
+  document.getElementById('form-title').textContent = t.formTitle;
+  document.getElementById('how-title').textContent = t.howTitle;
+  document.getElementById('how-sub').textContent = t.howSub;
+  document.getElementById('s1-title').textContent = t.s1[0];
+  document.getElementById('s1-desc').textContent = t.s1[1];
+  document.getElementById('s2-title').textContent = t.s2[0];
+  document.getElementById('s2-desc').textContent = t.s2[1];
+  document.getElementById('s3-title').textContent = t.s3[0];
+  document.getElementById('s3-desc').textContent = t.s3[1];
+  document.getElementById('s4-title').textContent = t.s4[0];
+  document.getElementById('s4-desc').textContent = t.s4[1];
+  document.getElementById('lbl-url').textContent = t.urlLabel;
+}
+
+function selectType(type, el) {
+  currentType = type;
+  document.querySelectorAll('.qr-type').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  ['url','vcard','text','email','whatsapp','feedback'].forEach(t => {
+    const el = document.getElementById('fields-'+t);
+    if(el) el.style.display = t === type ? 'block' : 'none';
+  });
+}
+
+function selectColor(el) {
+  document.querySelectorAll('.color-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  currentColor = el.dataset.color;
+}
+
+function getQRData() {
+  switch(currentType) {
+    case 'url': return document.getElementById('input-url').value || 'https://snapqr.com';
+    case 'vcard':
+      const n=document.getElementById('vc-name').value||'Name';
+      const p=document.getElementById('vc-phone').value||'';
+      const e=document.getElementById('vc-email').value||'';
+      const t=document.getElementById('vc-title').value||'';
+      return `BEGIN:VCARD\nVERSION:3.0\nFN:${n}\nTEL:${p}\nEMAIL:${e}\nTITLE:${t}\nEND:VCARD`;
+    case 'text': return document.getElementById('input-text').value || 'Hello from SnapQR!';
+    case 'email':
+      const em=document.getElementById('input-email').value||'';
+      const sub=document.getElementById('input-subject').value||'';
+      return `mailto:${em}?subject=${encodeURIComponent(sub)}`;
+    case 'whatsapp':
+      const wa=document.getElementById('input-wa').value.replace(/\D/g,'')||'';
+      const msg=encodeURIComponent(document.getElementById('input-wa-msg').value||'Hello!');
+      return `https://wa.me/${wa}?text=${msg}`;
+    case 'feedback': return document.getElementById('input-feedback').value || 'https://forms.gle/example';
+    default: return 'https://snapqr.com';
+  }
+}
+
+function generateQR() {
+  const data = getQRData();
+  const container = document.getElementById('qrcode');
+  const placeholder = document.getElementById('qr-placeholder');
+  container.innerHTML = '';
+  container.style.display = 'block';
+  placeholder.style.display = 'none';
+  new QRCode(container, {
+    text: data,
+    width: 200,
+    height: 200,
+    colorDark: currentColor,
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  document.getElementById('preview-label').textContent = '✅ QR Code ready! Download below.';
+  qrGenerated = true;
+}
+
+function downloadQR(format) {
+  if(!qrGenerated){ alert('Please generate a QR code first!'); return; }
+  const canvas = document.querySelector('#qrcode canvas');
+  if(!canvas){ alert('Please generate a QR code first!'); return; }
+  const link = document.createElement('a');
+  link.download = 'SnapQR_code.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>
